@@ -11,62 +11,108 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from PIL import Image,ImageTk
 import matplotlib.pyplot as plt
+from sklearn.model_selection import RandomizedSearchCV
+import numpy as np
 
-
+#Reading the Data
 DataPath = ('Loan_Status.csv')
 data = pd.read_csv(DataPath)
 
-# print(data.isna().any())
-# print(data.nunique())
-data.head()
-data.tail()
-# print("Number of Rows",data.shape[0])
-# print("Number of Columns",data.shape[1])
+# # Checking for Missing Values
+
+# # (insa)check if there are any missing values in the dataframe
+# # (any)check if there are any missing values in any of the columns
+# # Count the number of missing values in each column
+# # print(data.isna().any())
+
+# # # Data Exploration
+# # # get the number of unique values in each column
+# # print(data.nunique())
+
+# # # display the first and last few rows of the dataframe
+# # data.head()
+# # data.tail()
+
+# # # (Shape)get the number of rows and columns in the dataframe
+# # print("Number of Rows",data.shape[0])
+# # print("Number of Columns",data.shape[1])
+
+# # Data Cleaning
 
 # data.info()
+
+# # function is used to count the number of missing values in each column
 # data.isnull().sum()
+# # calculates the percentage of null values in each column of the dataset.
 # print(data.isnull().sum()*100 / len(data))
+
+# # Drop any rows in the dataframe that contain missing values.
 data=data.dropna()
 # print(data.isnull().sum())
+
+# # Display descriptive statistics about the dataframe such as the mean, standard deviation.
 # print(data.describe())
 
+# Adjustment to numerical values by replacing  'N' with 0 and 'Y' with 1
 data.replace({'Loan_Status':{'N':0,'Y':1}},inplace=True)
+
+# # counts the unique values 
 # print(data['Dependents'].value_counts())
+
+# # replaces any '3+' in the 'Dependents' column with the value 4
 data['Dependents'].replace('3+',4,inplace=True)
 
-# data.isnull().sum()*100 / len(data)
+data.isnull().sum()*100 / len(data)
+
 # print(data['Self_Employed'].mode()[0])
 
+# 'inplace=True' parameter ensures that the changes are made directly to the 'data' dataframe instead of creating a new one
 data.replace({'Married':{'No':0,'Yes':1},'Gender':{'Male':1,'Female':0},'Self_Employed':{'No':0,'Yes':1},
                       'Property_Area':{'Rural':0,'Semiurban':1,'Urban':2},'Education':{'Graduate':1,'Not Graduate':0}},inplace=True)
 
 data=data.drop('Loan_ID',axis=1)
 # print(data.head(1))
-# x = data[['CoapplicantIncome', 'LoanAmount']].values
+x = data[['CoapplicantIncome', 'LoanAmount']].values
 x = data.drop('Loan_Status',axis=1)
 y = data['Loan_Status']
 
 # print(x.shape)
 # print(y.shape)
 
+# contains a list of column names that need to be standardized
 cols = ['ApplicantIncome','CoapplicantIncome','LoanAmount','Loan_Amount_Term']
+
+#  StandardScaler() function used to standardize the numerical variables
 st = StandardScaler()
+
+# (fit_transform)function standardizes the columns listed in the 'cols'
 x[cols]=st.fit_transform(x[cols])
 # print(x)
 
+#  initializes an empty dictionary 'model_df' to store model results.
 model_df={}
 #train set and test set
 def model_val(model,x,y):
+    # function splits the data into training and testing sets
+    # train_test_split function from the sklearn library to split
+    # the data into training and testing sets, 
+    # with 20% of the data used for testing and the rest used for training.
     x_train,x_test,y_train,y_test=train_test_split(x,y,
                                                    test_size=0.20,
                                                    random_state=42)
+    
+    #  initializes an empty dictionary 'model_df' to store model results.
     model.fit(x_train,y_train)
+    
+    # function creates predictions on the test set.
     y_pred=model.predict(x_test)
     # print(f"{model} accuracy is {accuracy_score(y_test,y_pred)}")
     
     # score = cross_val_score(model,x,y,cv=5)
     # # print(f"{model} Avg cross val score is {np.mean(score)}")
     # model_df[model]=round(np.mean(score)*100,2)
+    
+    #  function outputs the accuracy score of the model as a string
     return str (accuracy_score(y_test,y_pred)*100)
     
     
@@ -76,15 +122,22 @@ def Accuracy():
     acc.set(result)
     
 
-
-rf = RandomForestClassifier(n_estimators=270,
+# Random Forest model with specific parameters such as the number of estimators,
+# minimum samples per split, minimum samples per leaf, maximum features, and maximum depth.
+rf = RandomForestClassifier(
+ n_estimators=270,
  min_samples_split=5,
  min_samples_leaf=5,
  max_features='sqrt',
- max_depth=5)
+ max_depth=5
+)
 
+# Train the 'rf' model on 'x' and 'y'.
 rf.fit(x,y)
+
+# save the model to a file called 'loan_status_predict'
 joblib.dump(rf,'loan_status_predict')
+
 model = joblib.load('loan_status_predict')
 
 
