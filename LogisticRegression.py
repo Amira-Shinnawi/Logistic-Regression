@@ -11,8 +11,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from PIL import Image,ImageTk
 import matplotlib.pyplot as plt
-from sklearn.model_selection import RandomizedSearchCV
-import numpy as np
 
 #Reading the Data
 DataPath = ('Loan_Status.csv')
@@ -107,11 +105,7 @@ def model_val(model,x,y):
     # function creates predictions on the test set.
     y_pred=model.predict(x_test)
     # print(f"{model} accuracy is {accuracy_score(y_test,y_pred)}")
-    
-    # score = cross_val_score(model,x,y,cv=5)
-    # # print(f"{model} Avg cross val score is {np.mean(score)}")
-    # model_df[model]=round(np.mean(score)*100,2)
-    
+
     #  function outputs the accuracy score of the model as a string
     return str (accuracy_score(y_test,y_pred)*100)
     
