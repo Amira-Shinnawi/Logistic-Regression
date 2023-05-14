@@ -81,6 +81,7 @@ y = data['Loan_Status']
 cols = ['ApplicantIncome','CoapplicantIncome','LoanAmount','Loan_Amount_Term']
 
 #  StandardScaler() function used to standardize the numerical variables
+#  reducing the number of iterations required to reach a solution.
 st = StandardScaler()
 
 # (fit_transform)function standardizes the columns listed in the 'cols'
@@ -118,6 +119,8 @@ def Accuracy():
 
 # Random Forest model with specific parameters such as the number of estimators,
 # minimum samples per split, minimum samples per leaf, maximum features, and maximum depth.
+# It can handle missing values and noisy data.
+# It is less prone to overfitting than other classification algorithms.
 rf = RandomForestClassifier(
  n_estimators=270,
  min_samples_split=5,
@@ -277,10 +280,7 @@ def showdatagram():
  plt.xlabel('Applicant Income')
  plt.ylabel('Loan Amount')
  plt.legend()
-    # tbl = pd.crosstab(index = data['Loan_Status'], columns = data['Gender'])
-    # tbl.index = ['Not Approved','Approved']
-    # tbl2 = tbl
-    # tbl2.plot.bar(xlabel = 'Loan Status', rot = 0)
+
  plt.show()
 
 
